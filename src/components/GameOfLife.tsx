@@ -18,6 +18,7 @@ interface GameOfLifeProps {
   onRadialSymmetricRandomComplete: () => void;
   patternToApply?: { name: string; pattern: [number, number][]; offset: any } | null;
   patternTrigger?: number;
+  ruleSet?: 'conway' | 'seeds' | 'highlife';
 }
 
 type Pattern = [number, number][];
@@ -35,6 +36,7 @@ export const GameOfLife: React.FC<GameOfLifeProps> = ({
   onRadialSymmetricRandomComplete,
   patternToApply,
   patternTrigger,
+  ruleSet = 'conway',
 }) => {
   const [grid, setGrid] = useState<Grid>(() => {
     const initial = createEmptyGrid(GRID_SIZE, GRID_SIZE);
@@ -208,13 +210,13 @@ export const GameOfLife: React.FC<GameOfLifeProps> = ({
     if (!isRunning) return;
     console.log('Setting up game loop with speed:', speed);
     const intervalId = window.setInterval(() => {
-      setGrid(currentGrid => getNextGeneration(currentGrid));
+      setGrid(currentGrid => getNextGeneration(currentGrid, ruleSet));
     }, speed);
     return () => {
       console.log('Cleaning up game loop');
       clearInterval(intervalId);
     };
-  }, [isRunning, speed]);
+  }, [isRunning, speed, ruleSet]);
 
   return (
     <div className="flex flex-col items-center gap-4 p-4">

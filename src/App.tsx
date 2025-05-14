@@ -14,6 +14,7 @@ function App() {
   const [shouldRandomize, setShouldRandomize] = useState(false);
   const [shouldSymmetricRandom, setShouldSymmetricRandom] = useState(false);
   const [shouldRadialSymmetricRandom, setShouldRadialSymmetricRandom] = useState(false);
+  const [ruleSet, setRuleSet] = useState<'conway' | 'seeds' | 'highlife'>('conway');
   const patternRef = useRef<{ name: string; pattern: [number, number][]; offset: any } | null>(null);
   const [patternTrigger, setPatternTrigger] = useState(0);
 
@@ -30,29 +31,59 @@ function App() {
     setSpeed(newSpeed);
   };
 
+  const handleRandomize = () => {
+    setRuleSet('conway');
+    setShouldRandomize(true);
+  };
+  const handleSymmetricRandom = () => {
+    setRuleSet('conway');
+    setShouldSymmetricRandom(true);
+  };
+  const handleRadialSymmetricRandom = () => {
+    setRuleSet('conway');
+    setShouldRadialSymmetricRandom(true);
+  };
+  const handleMazeRandom = () => {
+    setRuleSet('conway'); // Maze is a random pattern, not a ruleset
+    setShouldRandomize(true); // You can implement a maze generator if desired
+  };
+  const handleHighLifeRandom = () => {
+    setRuleSet('highlife');
+    setShouldRandomize(true);
+  };
+  const handleSeedsRandom = () => {
+    setRuleSet('seeds');
+    setShouldRandomize(true);
+  };
+
   return (
     <div className="min-h-screen bg-gray-100">
       <TopBar />
-      <ControlBar
-        isRunning={isRunning}
-        onStartStop={() => setIsRunning(!isRunning)}
-        onClear={() => {
-          setIsRunning(false);
-          setShouldClear(true);
-        }}
-        onRandomize={() => {
-          setShouldRandomize(true);
-        }}
-        onSymmetricRandom={() => {
-          setShouldSymmetricRandom(true);
-        }}
-        onRadialSymmetricRandom={() => {
-          setShouldRadialSymmetricRandom(true);
-        }}
-        speed={speed}
-        onSpeedChange={handleSpeedChange}
-      />
-      <PatternBar patterns={patterns} onPatternSelect={handlePatternSelect} />
+      <div className="w-full bg-gray-50 shadow-sm">
+        <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-stretch gap-2 px-4 py-3">
+          <div className="flex-1 flex items-center justify-center md:justify-start mb-2 md:mb-0">
+            <ControlBar
+              isRunning={isRunning}
+              onStartStop={() => setIsRunning(!isRunning)}
+              onClear={() => {
+                setIsRunning(false);
+                setShouldClear(true);
+              }}
+              onRandomize={handleRandomize}
+              onSymmetricRandom={handleSymmetricRandom}
+              onRadialSymmetricRandom={handleRadialSymmetricRandom}
+              onMazeRandom={handleMazeRandom}
+              onHighLifeRandom={handleHighLifeRandom}
+              onSeedsRandom={handleSeedsRandom}
+              speed={speed}
+              onSpeedChange={handleSpeedChange}
+            />
+          </div>
+          <div className="flex-1 flex items-center justify-center md:justify-end">
+            <PatternBar patterns={patterns} onPatternSelect={handlePatternSelect} />
+          </div>
+        </div>
+      </div>
       <main className="max-w-7xl mx-auto">
         <GameOfLife
           isRunning={isRunning}
@@ -70,6 +101,7 @@ function App() {
           onRadialSymmetricRandomComplete={() => setShouldRadialSymmetricRandom(false)}
           patternToApply={patternRef.current}
           patternTrigger={patternTrigger}
+          ruleSet={ruleSet}
         />
       </main>
     </div>

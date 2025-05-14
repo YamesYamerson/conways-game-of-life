@@ -40,7 +40,7 @@ export const getNeighbors = (grid: Grid, position: Position): number => {
   return count;
 };
 
-export const getNextGeneration = (grid: Grid): Grid => {
+export const getNextGeneration = (grid: Grid, ruleSet: 'conway' | 'seeds' | 'highlife' = 'conway'): Grid => {
   const rows = grid.length;
   const cols = grid[0]?.length ?? 0;
   const newGrid = createEmptyGrid(rows, cols);
@@ -50,11 +50,24 @@ export const getNextGeneration = (grid: Grid): Grid => {
       const neighbors = getNeighbors(grid, { row, col });
       const cell = grid[row]?.[col];
       
-      // Apply Conway's Game of Life rules
-      if (cell && cell.isAlive && newGrid[row]?.[col]) {
-        newGrid[row][col]!.isAlive = neighbors === 2 || neighbors === 3;
-      } else if (cell && newGrid[row]?.[col]) {
-        newGrid[row][col]!.isAlive = neighbors === 3;
+      if (ruleSet === 'conway') {
+        if (cell && cell.isAlive && newGrid[row] && newGrid[row][col]) {
+          newGrid[row][col]!.isAlive = neighbors === 2 || neighbors === 3;
+        } else if (cell && newGrid[row] && newGrid[row][col]) {
+          newGrid[row][col]!.isAlive = neighbors === 3;
+        }
+      } else if (ruleSet === 'seeds') {
+        if (cell && !cell.isAlive && newGrid[row] && newGrid[row][col]) {
+          newGrid[row][col]!.isAlive = neighbors === 2;
+        } else if (cell && newGrid[row] && newGrid[row][col]) {
+          newGrid[row][col]!.isAlive = false;
+        }
+      } else if (ruleSet === 'highlife') {
+        if (cell && cell.isAlive && newGrid[row] && newGrid[row][col]) {
+          newGrid[row][col]!.isAlive = neighbors === 2 || neighbors === 3;
+        } else if (cell && newGrid[row] && newGrid[row][col]) {
+          newGrid[row][col]!.isAlive = neighbors === 3 || neighbors === 6;
+        }
       }
     }
   }
